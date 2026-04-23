@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA BY CARSON – Parfums de luxe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">AURA BY CARSON</div>
+    <div class="nav-links">
+      <a href="index.html">ACCUEIL</a>
+      <a href="submit.html">PROPOSER</a>
+      <a href="admin.html">ADMIN</a>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>L'ÉLIXIR DU LUXE</h1>
+  <p>FRAGRANCES D'EXCEPTION – Elegance notre priorité</p>
+</div>
+
+<main class="container">
+  <div class="perfume-grid" id="perfumeGrid"></div>
+</main>
+
+<button id="cartFloatingBtn">🛒 PANIER (<span id="cartCount">0</span>)</button>
+
+<div id="cartSidebar" class="cart-sidebar">
+  <div class="cart-header">
+    <span>Votre panier</span>
+    <button class="btn-outline" onclick="window.toggleCart()">✕</button>
+  </div>
+  <div id="cartItems"></div>
+  <div class="cart-total">Total : <span id="cartTotal">0</span> FCFA</div>
+  <button class="btn-gold" style="width:100%; margin-top:1rem;"
+    onclick="window.checkout()">📲 Commander via WhatsApp</button>
+</div>
+
+<!-- Chargement en module ES pour accéder à Firebase -->
+<script type="module" src="script.js"></script>
+
+<script>
+  document.getElementById('cartFloatingBtn')
+    .addEventListener('click', () => window.toggleCart && window.toggleCart());
+
+  function updateCartCount() {
+    const cart  = JSON.parse(localStorage.getItem('cart')) || [];
+    const count = cart.reduce((s, i) => s + i.quantity, 0);
+    document.getElementById('cartCount').innerText = count;
+  }
+  window.addEventListener('load', updateCartCount);
+  setInterval(updateCartCount, 500);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #080808;
+  background-image: repeating-linear-gradient(45deg, rgba(212, 175, 55, 0.02) 0px, rgba(212, 175, 55, 0.02) 2px, transparent 2px, transparent 8px);
+  color: #ececec;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* HEADER TRANSPARENT CHIC */
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(8, 8, 8, 0.85);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 20px 0;
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0 40px;
+}
+
+.logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: #d4af37;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.nav-links a {
+  color: #e0e0e0;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 1px;
+  transition: 0.3s;
+  position: relative;
+}
+
+.nav-links a:hover {
+  color: #d4af37;
+}
+
+/* BOUTONS DORES MINIMALISTES */
+.btn-gold {
+  background: transparent;
+  border: 1.5px solid #d4af37;
+  color: #d4af37;
+  padding: 12px 28px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.btn-gold:hover {
+  background: #d4af37;
+  color: #080808;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0;
+}
+
+.btn-outline:hover {
+  background: #d4af37;
+  color: black;
+}
+
+/* BANNIÈRE PRINCIPALE */
+.hero {
+  text-align: center;
+  padding: 100px 20px 80px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  margin-bottom: 40px;
+}
+
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5rem;
+  font-weight: 500;
+  color: #d4af37;
+  letter-spacing: 8px;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  font-size: 1rem;
+  letter-spacing: 3px;
+  color: #aaa;
+}
+
+/* GRILLE PARFUMS – CARTES MINIMALISTES */
+.perfume-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 50px;
+  margin: 60px 0;
+}
+
+.perfume-card {
+  background: #0f0f0f;
+  border: none;
+  transition: transform 0.4s ease, box-shadow 0.4s;
+  cursor: pointer;
+}
+
+.perfume-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px -15px rgba(0,0,0,0.8);
+}
+
+.perfume-card img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  filter: grayscale(10%);
+  transition: filter 0.4s;
+}
+
+.perfume-card:hover img {
+  filter: grayscale(0%);
+}
+
+.perfume-info {
+  padding: 25px 20px 30px;
+  text-align: center;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.perfume-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #d4af37;
+  margin-bottom: 8px;
+}
+
+.perfume-price {
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin: 12px 0;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.perfume-desc {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+.btn-add {
+  background: transparent;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  padding: 8px 20px;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.btn-add:hover {
+  background: #d4af37;
+  color: #080808;
+}
+
+/* PANIER LATERAL – LUXE SOBRE */
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  height: 100vh;
+  background: #0a0a0a;
+  border-left: 1px solid #d4af37;
+  padding: 30px 25px;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  z-index: 1000;
+  overflow-y: auto;
+  box-shadow: -10px 0 40px rgba(0,0,0,0.7);
+}
+
+.cart-sidebar.open {
+  transform: translateX(0);
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  border-bottom: 1px solid #d4af37;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #333;
+  font-size: 0.9rem;
+}
+
+.cart-total {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 2px solid #d4af37;
+  font-size: 1.2rem;
+  text-align: right;
+  font-weight: 500;
+}
+
+/* FORMULAIRES ÉPURÉS */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: #e0c87c;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  transition: 0.3s;
+}
+
+input:focus, textarea:focus {
+  border-color: #d4af37;
+  outline: none;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #d4af37;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* BOUTON FIXE PANIER */
+#cartFloatingBtn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #d4af37;
+  color: #080808;
+  border: none;
+  border-radius: 50px;
+  padding: 14px 28px;
+  font-weight: bold;
+  z-index: 99;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  transition: 0.2s;
+}
+
+#cartFloatingBtn:hover {
+  background: #e6c27a;
+  transform: scale(1.02);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+  .hero h1 {
+    font-size: 2.5rem;
+    letter-spacing: 4px;
+  }
+  .perfume-card img {
+    height: 280px;
+  }
+  .cart-sidebar {
+    width: 100%;
+  }
+  .header-inner {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+}

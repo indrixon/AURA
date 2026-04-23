@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soumettre un parfum – AURA BY CARSON</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">AURA BY CARSON</div>
+    <div class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="submit.html">Proposer</a>
+      <a href="admin.html">Espace privé</a>
+    </div>
+  </div>
+</header>
+
+<div class="container" style="max-width:700px; padding-top:60px;">
+  <h1 style="font-family:'Cormorant Garamond',serif; color:#d4af37; font-size:2.5rem; margin-bottom:1rem;">
+    Proposer une fragrance
+  </h1>
+  <p style="margin-bottom:2rem; color:#aaa;">
+    Votre création sera examinée par notre comité.
+    Si elle est retenue, elle rejoindra notre collection.
+  </p>
+
+  <div style="background:rgba(0,0,0,0.4); padding:2rem; border-radius:12px; border:1px solid #222;">
+    <div class="form-group">
+      <label>Nom du parfum *</label>
+      <input id="sName" placeholder="Ex: Rose Noire">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="sDesc" rows="3" placeholder="Notes, inspirations…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Prix suggéré (FCFA) *</label>
+      <input id="sPrice" type="number" step="500" placeholder="Ex: 20000">
+    </div>
+    <div class="form-group">
+      <label>Photo (optionnel)</label>
+      <input id="sImage" type="file" accept="image/*">
+      <!-- Barre de progression upload -->
+      <div style="display:none; margin-top:8px; height:8px; background:#222; border-radius:4px; overflow:hidden;" id="progressBar">
+        <div id="progressFill" style="height:100%; background:#d4af37; width:0%; transition:width 0.3s;"></div>
+      </div>
+      <small id="uploadLabel" style="color:#888; font-size:0.75rem;"></small>
+    </div>
+    <div class="form-group">
+      <label>Votre nom ou pseudo *</label>
+      <input id="sSubmitter" placeholder="Ex: Aminata K.">
+    </div>
+
+    <button class="btn-gold" id="submitBtn" style="width:100%;">
+      Envoyer ma proposition
+    </button>
+  </div>
+
+  <div id="msg" style="margin-top:1rem;"></div>
+</div>
+
+<script type="module">
+  import { uploadImage } from './cloudinary-config.js';
+  import { turso }       from './turso-config.js';
+
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const name      = document.getElementById('sName').value.trim();
+    const desc      = document.getElementById('sDesc').value.trim();
+    const price     = document.getElementById('sPrice').value;
+    const file      = document.getElementById('sImage').files[0];
+    const submitter = document.getElementById('sSubmitter').value.trim();
+    const msgDiv    = document.getElementById('msg');
+
+    // Validation
+    if (!name || !price || !submitter) {
+      msgDiv.innerHTML = '<p style="color:#e55;">⚠️ Veuillez remplir tous les champs obligatoires (*).</p>';
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled  = true;
+    btn.textContent = 'Envoi en cours…';
+    msgDiv.innerHTML = '';
+
+    try {
+      // 1. Upload image sur Cloudinary si un fichier est sélectionné
+      let imageUrl = null;
+      if (file) {
+        document.getElementById('progressBar').style.display = 'block';
+
+        imageUrl = await uploadImage(file, (pct) => {
+          document.getElementById('progressFill').style.width = pct + '%';
+          document.getElementById('uploadLabel').textContent  = `Upload image… ${pct}%`;
+        });
+
+        document.getElementById('uploadLabel').textContent = '✅ Image uploadée';
+      }
+
+      // 2. Insérer la soumission dans Turso
+      await turso.execute({
+        sql: `INSERT INTO submissions
+                (name, price, description, imageUrl, submitter_name, status)
+              VALUES (?, ?, ?, ?, ?, 'pending')`,
+        args: [name, parseInt(price), desc, imageUrl, submitter]
+      });
+
+      // Succès
+      msgDiv.innerHTML = `
+        <p style="color:#d4af37; font-size:1.1rem;">
+          ✅ Votre proposition a bien été envoyée !<br>
+          <small style="color:#888;">Notre équipe l'examinera dans les plus brefs délais.</small>
+        </p>`;
+
+      // Réinitialiser le formulaire
+      ['sName','sDesc','sPrice','sSubmitter'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('sImage').value = '';
+      document.getElementById('progressBar').style.display = 'none';
+      document.getElementById('uploadLabel').textContent   = '';
+
+    } catch (err) {
+      msgDiv.innerHTML = `<p style="color:#e55;">❌ Erreur : ${err.message}</p>`;
+      console.error(err);
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Envoyer ma proposition';
+    }
+  });
+</script>
+
+</body>
+</html>
