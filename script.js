@@ -135,7 +135,7 @@ window.checkout = function() {
   message += details;
   message += `%0A💰 *TOTAL : ${totalPrice.toLocaleString()} FCFA*%0A`;
 
-  const phone = "22871040481";
+  const phone = "22871048481";
   window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
 };
 
