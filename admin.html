@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA Admin – Accès Privé</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ═══ ÉCRAN DE CONNEXION ══════════════════════════════════════════════ */
+    #loginGate {
+      position: fixed;
+      inset: 0;
+      background: #080808;
+      background-image: repeating-linear-gradient(45deg, rgba(212,175,55,0.025) 0px, rgba(212,175,55,0.025) 2px, transparent 2px, transparent 8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0;
+      /* Animation d'entrée */
+      animation: fadeInGate 0.6s ease both;
+    }
+
+    @keyframes fadeInGate {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Décor doré en haut et en bas */
+    #loginGate::before,
+    #loginGate::after {
+      content: '';
+      position: fixed;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    }
+    #loginGate::before { top: 0; }
+    #loginGate::after  { bottom: 0; }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      padding: 3.5rem 3rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(212,175,55,0.25);
+      text-align: center;
+      animation: slideUp 0.7s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-ornament {
+      font-size: 0.6rem;
+      letter-spacing: 6px;
+      color: rgba(212,175,55,0.4);
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+
+    .login-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 600;
+      color: #d4af37;
+      letter-spacing: 5px;
+      text-shadow: 0 0 30px rgba(212,175,55,0.2);
+      margin-bottom: 0.3rem;
+    }
+
+    .login-subtitle {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+    }
+
+    .login-label {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: #d4af37;
+      text-transform: uppercase;
+      text-align: left;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .login-input-wrap {
+      position: relative;
+      margin-bottom: 1.8rem;
+    }
+
+    #gatePassword {
+      width: 100%;
+      padding: 14px 48px 14px 16px;
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-bottom-color: rgba(212,175,55,0.4);
+      color: #e0c87c;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      text-align: center;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+
+    #gatePassword:focus {
+      border-color: rgba(212,175,55,0.6);
+      box-shadow: 0 4px 20px -5px rgba(212,175,55,0.15);
+    }
+
+    /* Icône œil pour afficher/masquer */
+    #toggleEye {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #555;
+      font-size: 1rem;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    #toggleEye:hover { color: #d4af37; }
+
+    #loginBtn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1.5px solid #d4af37;
+      color: #d4af37;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #loginBtn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #d4af37;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+      z-index: 0;
+    }
+
+    #loginBtn:hover::before { transform: scaleX(1); }
+    #loginBtn:hover { color: #080808; }
+    #loginBtn span { position: relative; z-index: 1; }
+
+    /* Shake + message d'erreur */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-8px); }
+      40%,80%  { transform: translateX(8px); }
+    }
+
+    .shake { animation: shake 0.4s ease; }
+
+    #loginError {
+      margin-top: 1.2rem;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      color: #c0392b;
+      min-height: 1.2em;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #loginError.visible { opacity: 1; }
+
+    .login-footer {
+      margin-top: 2.5rem;
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      color: #2a2a2a;
+      text-transform: uppercase;
+    }
+
+    /* ═══ CONTENU ADMIN CACHÉ AU DÉPART ══════════════════════════════════ */
+    #adminContent { display: none; }
+
+    /* Animation de déverrouillage */
+    @keyframes unlockFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #adminContent.visible {
+      display: block;
+      animation: unlockFadeIn 0.5s ease both;
+    }
+
+    /* ═══ RESTE DU STYLE ADMIN ════════════════════════════════════════════ */
+    .perfume-list { margin-top: 2rem; }
+    .perfume-item {
+      background: #111;
+      border-left: 3px solid #d4af37;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .perfume-info strong { color: #d4af37; font-size: 1.2rem; }
+    .btn-delete  { background: #8b0000; border: none; color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; }
+    .btn-approve { background: #1b4d3e; border: none; color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; }
+    .upload-progress { display: none; margin-top: 0.5rem; height: 10px; background: #222; border-radius: 5px; overflow: hidden; }
+    .progress-fill   { height: 100%; background: #d4af37; width: 0%; transition: width 0.3s; }
+    .badge-pending   { font-size:0.75rem; background:#3a2800; color:#d4af37; padding:2px 8px; border-radius:4px; }
+
+    /* Badge session active dans le header admin */
+    .session-badge {
+      font-size: 0.6rem;
+      letter-spacing: 1px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.3);
+      color: #d4af37;
+      padding: 4px 10px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .session-badge:hover { background: rgba(139,0,0,0.2); border-color: #8b0000; color: #e55; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ÉCRAN DE CONNEXION (s'affiche en premier, bloque tout l'admin)
+     ════════════════════════════════════════════════════════════════════ -->
+<div id="loginGate">
+  <div class="login-box">
+
+    <div class="login-ornament">✦ &nbsp; Espace Privé &nbsp; ✦</div>
+    <div class="login-logo">AURA</div>
+    <div class="login-subtitle">Administration</div>
+
+    <label class="login-label" for="gatePassword">Code d'accès</label>
+    <div class="login-input-wrap">
+      <input type="password" id="gatePassword" placeholder="••••••••••"
+             autocomplete="current-password" spellcheck="false">
+      <button id="toggleEye" type="button" title="Afficher / masquer" aria-label="Afficher le mot de passe">👁</button>
+    </div>
+
+    <button id="loginBtn" type="button"><span>Accéder →</span></button>
+
+    <div id="loginError">Code incorrect — accès refusé</div>
+
+    <div class="login-footer">AURA BY CARSON &nbsp;·&nbsp; Accès restreint</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     CONTENU ADMIN (masqué tant que non authentifié)
+     ════════════════════════════════════════════════════════════════════ -->
+<div id="adminContent">
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">AURA ADMIN</div>
+      <div class="nav-links" style="display:flex; align-items:center; gap:2rem;">
+        <a href="index.html">Voir le site</a>
+        <button class="session-badge" onclick="window._gate.logout()" title="Déconnecter la session">
+          🔒 Déconnexion
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container" style="padding-top: 40px; max-width: 900px;">
+
+    <!-- ═══ AJOUTER UN PARFUM ══════════════════════════════════════════════ -->
+    <section style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 15px;">
+      <h2 style="color:#d4af37; margin-bottom:1.5rem;">Ajouter un nouveau parfum</h2>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="form-group">
+          <label>Nom du parfum</label>
+          <input type="text" id="pName" placeholder="Ex: Nuit d'Or">
+        </div>
+        <div class="form-group">
+          <label>Prix (FCFA)</label>
+          <input type="number" id="pPrice" placeholder="Ex: 25000">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="pDesc" rows="3" placeholder="Notes de tête, cœur, fond..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Image du produit</label>
+        <input type="file" id="pImage" accept="image/*">
+        <div class="upload-progress" id="uploadProgress">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <small id="uploadLabel" style="color:#888; font-size:0.75rem;"></small>
+      </div>
+
+      <button class="btn-gold" onclick="window.addPerfume()" style="width:100%; margin-top:10px;">
+        Enregistrer dans Turso
+      </button>
+    </section>
+
+    <hr style="border: 0; border-top: 1px solid #333; margin: 3rem 0;">
+
+    <!-- ═══ SOUMISSIONS EN ATTENTE ════════════════════════════════════════ -->
+    <h2 style="color:#d4af37;">Soumissions en attente</h2>
+    <div id="pendingList" class="perfume-list">
+      <p style="color:#888;">Chargement des propositions…</p>
+    </div>
+
+    <!-- ═══ CATALOGUE COMPLET ══════════════════════════════════════════════ -->
+    <h2 style="color:#d4af37; margin-top:3rem;">Catalogue Actuel</h2>
+    <div id="fullList" class="perfume-list">
+      <p style="color:#888;">Chargement du catalogue…</p>
+    </div>
+
+  </div>
+</div><!-- /#adminContent -->
+
+
+<!-- ═══ SCRIPTS ═══════════════════════════════════════════════════════════ -->
+
+<!-- 1. Script de la porte d'accès (synchrone, pas de module) -->
+<script>
+  // Clé de session stockée dans sessionStorage
+  // → valable tant que l'onglet reste ouvert ; disparaît à la fermeture
+  const SESSION_KEY = 'aura_admin_auth';
+  const ADMIN_PWD   = 'Carson2026';
+
+  const gate         = document.getElementById('loginGate');
+  const adminContent = document.getElementById('adminContent');
+  const pwdInput     = document.getElementById('gatePassword');
+  const loginBtn     = document.getElementById('loginBtn');
+  const errorMsg     = document.getElementById('loginError');
+  const eyeBtn       = document.getElementById('toggleEye');
+
+  // ── Vérifier si déjà authentifié dans cette session ──────────────────
+  if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    unlockAdmin(false); // accès immédiat sans animation de déverrouillage
+  }
+
+  // ── Afficher / masquer le mot de passe ────────────────────────────────
+  eyeBtn.addEventListener('click', () => {
+    const isText = pwdInput.type === 'text';
+    pwdInput.type     = isText ? 'password' : 'text';
+    eyeBtn.textContent = isText ? '👁' : '🙈';
+  });
+
+  // ── Soumission par bouton ──────────────────────────────────────────────
+  loginBtn.addEventListener('click', tryLogin);
+
+  // ── Soumission par Entrée ─────────────────────────────────────────────
+  pwdInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  function tryLogin() {
+    if (pwdInput.value === ADMIN_PWD) {
+      sessionStorage.setItem(SESSION_KEY, '1');
+      unlockAdmin(true);
+    } else {
+      // Shake + message d'erreur
+      errorMsg.classList.add('visible');
+      const box = document.querySelector('.login-box');
+      box.classList.remove('shake');
+      void box.offsetWidth; // reflow pour relancer l'animation
+      box.classList.add('shake');
+      pwdInput.value = '';
+      pwdInput.focus();
+
+      // Masquer l'erreur après 2.5s
+      setTimeout(() => errorMsg.classList.remove('visible'), 2500);
+    }
+  }
+
+  function unlockAdmin(animate) {
+    if (animate) {
+      // Fondu sortant de la porte
+      gate.style.transition  = 'opacity 0.5s ease';
+      gate.style.opacity     = '0';
+      gate.style.pointerEvents = 'none';
+      setTimeout(() => {
+        gate.style.display = 'none';
+        adminContent.classList.add('visible');
+      }, 500);
+    } else {
+      gate.style.display = 'none';
+      adminContent.style.display = 'block';
+    }
+  }
+
+  // ── Déconnexion ───────────────────────────────────────────────────────
+  window._gate = {
+    logout() {
+      if (!confirm('Déconnecter la session admin ?')) return;
+      sessionStorage.removeItem(SESSION_KEY);
+      location.reload();
+    }
+  };
+</script>
+
+<!-- 2. Logique admin (module ES – ne se charge qu'une fois la page ouverte) -->
+<script type="module">
+  import { uploadImage } from './cloudinary-config.js';
+  import { turso }       from './turso-config.js';
+
+  // ── AJOUTER UN PARFUM ──────────────────────────────────────────────────
+  window.addPerfume = async function () {
+    const name  = document.getElementById('pName').value.trim();
+    const price = document.getElementById('pPrice').value;
+    const desc  = document.getElementById('pDesc').value.trim();
+    const file  = document.getElementById('pImage').files[0];
+
+    if (!name || !price) { alert("Nom et prix requis"); return; }
+
+    try {
+      let imageUrl = null;
+
+      if (file) {
+        document.getElementById('uploadProgress').style.display = 'block';
+        document.getElementById('uploadLabel').textContent = 'Upload Cloudinary…';
+
+        imageUrl = await uploadImage(file, (pct) => {
+          document.getElementById('progressFill').style.width = pct + '%';
+          document.getElementById('uploadLabel').textContent  = `Upload… ${pct}%`;
+        });
+
+        document.getElementById('uploadLabel').textContent = '✅ Image uploadée !';
+      }
+
+      await turso.execute({
+        sql:  "INSERT INTO perfumes (name, price, description, imageUrl, status) VALUES (?, ?, ?, ?, 'approved')",
+        args: [name, parseInt(price), desc, imageUrl]
+      });
+
+      alert("✨ Parfum ajouté au catalogue !");
+      location.reload();
+
+    } catch (err) {
+      alert("Erreur : " + err.message);
+      console.error(err);
+    }
+  };
+
+  // ── CHARGER LES DONNÉES ────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      // 1. Soumissions clients (pending)
+      const resSub    = await turso.execute(
+        "SELECT * FROM submissions WHERE status = 'pending' ORDER BY id DESC"
+      );
+      const pendingDiv = document.getElementById('pendingList');
+
+      if (resSub.rows.length === 0) {
+        pendingDiv.innerHTML = '<p style="color:#888;">Aucune proposition en attente.</p>';
+      } else {
+        pendingDiv.innerHTML = '';
+        resSub.rows.forEach(s => {
+          const thumb = s.imageUrl
+            ? `<img src="${s.imageUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;">`
+            : '';
+          pendingDiv.innerHTML += `
+            <div class="perfume-item">
+              <div style="display:flex;gap:12px;align-items:center;">
+                ${thumb}
+                <div class="perfume-info">
+                  <strong>${escHtml(s.name)}</strong>
+                  <span class="badge-pending">en attente</span><br>
+                  ${Number(s.price).toLocaleString()} FCFA<br>
+                  <small style="color:#888;">Par : ${escHtml(s.submitter_name || 'Anonyme')}</small>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn-approve" onclick="window._admin.approve(${s.id})">✔ Approuver</button>
+                <button class="btn-delete"  onclick="window._admin.reject(${s.id})">✖ Refuser</button>
+              </div>
+            </div>`;
+        });
+      }
+
+      // 2. Catalogue approuvé
+      const resFull = await turso.execute(
+        "SELECT * FROM perfumes WHERE status = 'approved' ORDER BY id DESC"
+      );
+      const fullDiv = document.getElementById('fullList');
+
+      if (resFull.rows.length === 0) {
+        fullDiv.innerHTML = '<p style="color:#888;">Catalogue vide.</p>';
+      } else {
+        fullDiv.innerHTML = '';
+        resFull.rows.forEach(p => {
+          const thumb = p.imageUrl
+            ? `<img src="${p.imageUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;">`
+            : '';
+          fullDiv.innerHTML += `
+            <div class="perfume-item">
+              <div style="display:flex;gap:12px;align-items:center;">
+                ${thumb}
+                <div class="perfume-info">
+                  <strong>${escHtml(p.name)}</strong><br>
+                  ${Number(p.price).toLocaleString()} FCFA
+                </div>
+              </div>
+              <button class="btn-delete" onclick="window._admin.deletePerfume(${p.id})">Supprimer</button>
+            </div>`;
+        });
+      }
+
+    } catch (err) {
+      console.error("Erreur chargement :", err);
+      document.getElementById('pendingList').innerHTML =
+        `<p style="color:#e55;">Erreur Turso : ${err.message}</p>`;
+    }
+  }
+
+  // ── ACTIONS ADMIN ──────────────────────────────────────────────────────
+  window._admin = {
+
+    deletePerfume: async (id) => {
+      if (!confirm("Supprimer définitivement ce parfum ?")) return;
+      await turso.execute({ sql: "DELETE FROM perfumes WHERE id = ?", args: [id] });
+      loadData();
+    },
+
+    approve: async (id) => {
+      try {
+        const rs = await turso.execute({ sql: "SELECT * FROM submissions WHERE id = ?", args: [id] });
+        const s  = rs.rows[0];
+        if (!s) { alert("Soumission introuvable."); return; }
+
+        await turso.execute({
+          sql:  "INSERT INTO perfumes (name, price, description, imageUrl, status) VALUES (?, ?, ?, ?, 'approved')",
+          args: [s.name, s.price, s.description, s.imageUrl]
+        });
+        await turso.execute({ sql: "DELETE FROM submissions WHERE id = ?", args: [id] });
+
+        alert("✅ Parfum approuvé et ajouté au catalogue !");
+        loadData();
+      } catch (err) { alert("Erreur : " + err.message); }
+    },
+
+    reject: async (id) => {
+      if (!confirm("Refuser et supprimer cette proposition ?")) return;
+      await turso.execute({ sql: "DELETE FROM submissions WHERE id = ?", args: [id] });
+      loadData();
+    }
+  };
+
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, m =>
+      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]
+    );
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>
